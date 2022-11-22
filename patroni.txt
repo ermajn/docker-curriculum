@@ -1,0 +1,41 @@
+sudo apt install curl ca-certificates gnupg
+
+curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
+
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+sudo apt update
+
+sudo apt install -y postgresql-14 postgresql-client-14
+
+sudo ln -s /usr/lib/postgresql/14/bin/* /usr/sbin/
+
+sudo systemctl stop postgresql
+sudo systemctl disable postgresql
+
+sudo apt -y install python3 python3-pip libpq-dev
+sudo ln -s /usr/bin/python3 /usr/bin/python
+
+sudo -H pip install testresources
+sudo -H pip install --upgrade setuptools
+
+sudo -H pip install psycopg2-binary
+sudo -H pip install psycopg2
+
+-- Next, edit haproxy.cfg file and replace batman with pg_cluster accordingly:
+
+python setup.py build
+
+$ patronictl list
+$ etcdctl member list
+
+
+# docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres:13.9
+
+# inside of container:
+$ apt-get update
+$ apt-get install nano
+$ pg_basebackup -D ./data2 -hlocalhost --checkpoint=fast --wal-method=stream -R
+$ modify port and primary connection parameters
+$ modify the recovery_target_time
+$ pg_ctl -D data2 start
