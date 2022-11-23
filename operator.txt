@@ -1,0 +1,59 @@
+# Minikube
+# Have at least 4 CPUs on VM
+# Have at least 4GB of RAM
+
+minikube stop
+minikube delete
+minikube config set memory 3931
+minikube config set cpus 4
+minikube start --kubernetes-version=v1.24.0
+
+minikube image pull registry.opensource.zalan.do/acid/spilo-14:2.1-p7
+
+git clone https://github.com/zalando/postgres-operator.git
+cd postgres-operator
+
+kubectl create -f manifests/configmap.yaml  # configuration
+kubectl create -f manifests/operator-service-account-rbac.yaml  # identity and permissions
+kubectl create -f manifests/postgres-operator.yaml  # deployment
+
+# Check if operator is running
+kubectl get pod -l name=postgres-operator
+
+vim manifests/complete-postgres-manifest.yaml 
+# change version to 13
+# Change CPU up limit to a 200m
+# Change memory limit to a 300Mi
+
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+# Check if we have running cluster
+
+# edit manifest, and scale up
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# check if cluster is running
+
+# edit manifest, and scale down
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# change max_connection number
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# Add user sbb with login rights
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# Enable logical backup, set cron to run every 5 minutes ("*/5 * * * *")
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# Increase number of replicas to 3
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
+
+# Scale version up to 14
+vim manifests/complete-postgres-manifest.yaml 
+kubectl apply -f manifests/complete-postgres-manifest.yaml
